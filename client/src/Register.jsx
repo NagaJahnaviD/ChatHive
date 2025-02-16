@@ -6,12 +6,14 @@ function Register() {
   const [username, setUsername]=useState('');
   const [password, setPassword]=useState('');
 
-
+  function register(){
+    
+  }
 
   return (
     <div className='container my-5'>
       <h1 className='text-center'>Register</h1>
-      <form className='w-50 mx-auto'>
+      <form className='w-50 mx-auto' onSubmit={register}>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">Username</label>
           <input type="text" 
