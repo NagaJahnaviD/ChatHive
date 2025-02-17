@@ -7,7 +7,8 @@ function UserContextProvider({children}) {
     const [id, setId] = useState(null);
     useEffect(()=>{
         axios.get('http://localhost:1234/profile').then(response=>{
-            console.log(response.data)
+            setId(response.data.userId);
+            setUsername(response.data.username);
         })
         .catch(error=>console.error("Error fetching profile: ", error));
     }, []);
