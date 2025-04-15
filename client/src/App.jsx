@@ -1,17 +1,38 @@
-import {useContext} from 'react'
-import axios from 'axios'
-import Routes from './Routes.jsx'
-import UserContextProvider from './UserContext.jsx';
-import {UserContext} from './UserContext.jsx';
+import React from 'react'
+import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import RootLayout from './components/RootLayout'
+import Home from './components/Home'
+import Register from './components/Register'
+import Login from './components/Login'
+import Profile  from './components/Profile';
+
 function App() {
-  axios.defaults.baseURL='http://localhost:3000';
-  axios.defaults.withCredentials = true; // to set cookies from API
-  
+
+  const browserROuterObj = createBrowserRouter([{
+    path:"/",
+    element:<RootLayout />,
+    children:[{
+      path:"",
+      element:<Home />,
+    },
+    {
+      path:"signup",
+      element:<Register />
+    },
+    {
+      path:"signin",
+      element:<Login />
+    },
+    {
+      path:"user-profile/:email",
+      element:<Profile />
+    }
+    ]
+  }])
+
   return (
     <div>
-      <UserContextProvider>
-      <Routes />
-      </UserContextProvider>
+      <RouterProvider router={browserROuterObj} />
     </div>
   )
 }
