@@ -4,7 +4,8 @@ import { useUser, useAuth } from '@clerk/clerk-react';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
+import Chat from './Chat';
+import Contacts from './Contacts';
 function Home() {
 
   const [error, setError] = useState('')
@@ -67,9 +68,11 @@ function Home() {
       }
       {
         isSignedIn === true &&
-        <div className="d-flex justify-content-around w-100">
-          <h3>Hey there, {user.firstName}, we'll change the ui dw</h3>
-          <img src={user.imageUrl} width="100px" className='rounded-circle' alt="" />
+        <div className="d-flex justify-content-evenly w-100">
+          {/* <h3>Hey there, {user.firstName}, we'll change the ui dw</h3>
+          <img src={user.imageUrl} width="100px" className='rounded-circle' alt="" /> */}
+          <Contacts/>
+          {/* <Chat/> */}
         </div>
       }   
       
