@@ -6,39 +6,61 @@ function Chat({ selectedContact }) {
   const { currentUser } = useContext(UserContext);
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
-  console.log("Selected Contact in Chat:", selectedContact);
-  const currentUserId = currentUser?._id;
+  const [mongoUserId, setMongoUserId] = useState('');
 
   useEffect(() => {
-    // console.log("hello",selectedContact)
-    if (currentUserId && selectedContact?._id) {
-      // Replace with your backend API later
+    if (currentUser) {
+      async function fetchMongoUserId() {
+        try {
+          const res = await axios.get(`http://localhost:1234/user-api/get-user-by-email/${currentUser.email}`);
+          setMongoUserId(res.data.payload); // MongoDB _id
+        } catch (err) {
+          console.error("Error fetching MongoDB userId", err);
+        }
+      }
+      fetchMongoUserId();
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (mongoUserId && selectedContact?._id) {
       const fetchMessages = async () => {
         try {
-          const res = await axios.get(`http://localhost:1234/message-api/conversation/${currentUserId}/${selectedContact._id}`);
-          setMessages(res.data.payload || []);
+          const res = await axios.get(`http://localhost:1234/message-api/messages`, {
+            params: {
+              senderId: mongoUserId,
+              recipientId: selectedContact._id
+            }
+          });
+          setMessages(res.data.messages || []);
         } catch (error) {
           console.error('Error fetching messages:', error);
         }
       };
       fetchMessages();
     }
-  }, [currentUserId, selectedContact]);
+  }, [mongoUserId, selectedContact]);
 
   const handleSend = async () => {
-    console.log("selected:",selectedContact)
     if (!newMsg.trim()) return;
 
     const msgData = {
-      senderId: currentUserId,
-      receiverId: selectedContact._id,
-      content: newMsg,
-      timestamp: new Date().toISOString(),
+      senderId: mongoUserId,
+      recipientId: selectedContact._id,
+      text: newMsg,
     };
+    console.log("Sending message:", msgData);
 
     try {
-      const res = await axios.post(`http://localhost:1234/message-api/send`, msgData);
-      setMessages(prev => [...prev, res.data.payload]);
+      const res = await axios.post(`http://localhost:1234/message-api/message`, msgData);
+      const newMessage = res.data.payload;
+
+      // Ensure consistent format (populate sender manually if needed)
+      if (typeof newMessage.sender === 'string') {
+        newMessage.sender = { _id: newMessage.sender };
+      }
+
+      setMessages(prev => [...prev, newMessage]);
       setNewMsg('');
     } catch (err) {
       console.error('Error sending message:', err);
@@ -47,7 +69,6 @@ function Chat({ selectedContact }) {
 
   return (
     <div style={styles.chatWrapper}>
-      <p>name:{selectedContact?.firstName}</p>
       <div style={styles.chatHeader}>
         <h3>{selectedContact?.firstName} {selectedContact?.lastName}</h3>
         <p style={{ fontSize: '0.85rem', color: '#555' }}>{selectedContact?.email}</p>
@@ -59,13 +80,16 @@ function Chat({ selectedContact }) {
             key={idx}
             style={{
               ...styles.messageBubble,
-              alignSelf: msg.senderId === currentUserId ? 'flex-end' : 'flex-start',
-              backgroundColor: msg.senderId === currentUserId ? '#d1f0ff' : '#eee',
+              alignSelf: msg.sender._id === mongoUserId ? 'flex-end' : 'flex-start',
+              backgroundColor: msg.sender._id === mongoUserId ? '#d1f0ff' : '#eee',
             }}
           >
-            {msg.content}
+            {msg.text}
             <div style={styles.timestamp}>
-              {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {new Date(msg.createdAt || msg.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
             </div>
           </div>
         ))}
