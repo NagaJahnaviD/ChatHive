@@ -13,10 +13,11 @@ const userApp = require('./APIs/userApi');
 app.use('/user-api', userApp);
 const chatApp = require('./APIs/chatAPI');
 app.use('/message-api', chatApp);
-
+console.log(' i am here')
 // Connect to DB and start server
 mongoose.connect("mongodb://localhost:27017/chathive")
   .then(() => {
+    console.log('now i am here')
     http.listen(1234, () => console.log(`Server listening on port 1234...`));
   })
   .catch(err => console.log("Error in DB connection", err));

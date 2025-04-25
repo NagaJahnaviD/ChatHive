@@ -2,7 +2,8 @@ const exp = require('express');
 const userApp = exp.Router();
 const User = require('../models/User');
 const expressAsyncHandler = require('express-async-handler');
-const requireAuth = require('@clerk/clerk-sdk-node').requireAuth; // Clerk middleware
+const { requireAuth } = require('@clerk/express');
+
 
 // Create a new user
 async function createNewUser(req, res) {

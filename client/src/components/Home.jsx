@@ -1,7 +1,7 @@
 import React from 'react'
 import { UserContext } from './UserContext';
 import { useUser, useAuth } from '@clerk/clerk-react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Chat from './Chat';
@@ -56,21 +56,95 @@ function Home() {
       
     }, [currentUser, isUserInitialized])
 
+    const vantaRef = useRef(null); // This will point to the DOM element
+
+  useEffect(() => {
+    let effect = null;
+  
+    const loadScript = (src) =>
+      new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = src;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.body.appendChild(script);
+      });
+  
+    const initVanta = async () => {
+      if (!vantaRef.current) return; // prevent early execution
+  
+      try {
+        await loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js");
+        await loadScript("https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.birds.min.js");
+  
+        effect = window.VANTA.BIRDS({
+          el: vantaRef.current,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          backgroundColor: 0xf3fbff,
+          color1: 0x11ed90,
+          color2: 0x3348e8,
+          colorMode: "lerpGradient",
+          birdSize: 1.2,
+          wingSpan: 19,
+          speedLimit: 8,
+          separation: 38,
+          alignment: 72,
+          cohesion: 14,
+        });
+      } catch (err) {
+        console.error("Failed to load Vanta or Three.js", err);
+      }
+    };
+  
+    if (!isSignedIn) {
+      // Delay to allow DOM to render
+      const timeout = setTimeout(() => {
+        initVanta();
+      }, 100); // 100ms delay
+  
+      return () => {
+        clearTimeout(timeout);
+        if (effect) effect.destroy();
+      };
+    }
+  }, [isSignedIn]);
+
   console.log(currentUser)
   
   return (
     <div>
       {
         isSignedIn===false && 
-        <div className="lead center">
-          Login avvu bro
-        </div>
+        <div
+  className="lead center"
+  ref={vantaRef}
+  style={{
+    width: "100%",
+    height: "100vh",
+    position: "relative",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "2rem",
+    color: "#333",
+    fontWeight: "bold"
+  }}
+>
+  Login avvu bro 😎
+</div>
+
       }
       {
         isSignedIn === true &&
         <div className="d-flex justify-content-evenly w-100">
-          {/* <h3>Hey there, {user.firstName}, we'll change the ui dw</h3>
-          <img src={user.imageUrl} width="100px" className='rounded-circle' alt="" /> */}
           <Contacts/>
           {/* <Chat/> */}
         </div>
