@@ -1,6 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { UserContext } from './UserContext';
 import axios from 'axios';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:1234');
 
 function Chat({ selectedContact }) {
   const { currentUser } = useContext(UserContext);
@@ -13,7 +16,7 @@ function Chat({ selectedContact }) {
       async function fetchMongoUserId() {
         try {
           const res = await axios.get(`http://localhost:1234/user-api/get-user-by-email/${currentUser.email}`);
-          setMongoUserId(res.data.payload); // MongoDB _id
+          setMongoUserId(res.data.payload);
         } catch (err) {
           console.error("Error fetching MongoDB userId", err);
         }
@@ -41,6 +44,20 @@ function Chat({ selectedContact }) {
     }
   }, [mongoUserId, selectedContact]);
 
+  useEffect(() => {
+    socket.on('receive-message', (msgData) => {
+      if (msgData.senderId === selectedContact?._id) {
+        setMessages(prev => [...prev, {
+          text: msgData.text,
+          sender: { _id: msgData.senderId },
+          createdAt: new Date(),
+        }]);
+      }
+    });
+
+    return () => socket.off('receive-message');
+  }, [selectedContact]);
+
   const handleSend = async () => {
     if (!newMsg.trim()) return;
 
@@ -49,19 +66,20 @@ function Chat({ selectedContact }) {
       recipientId: selectedContact._id,
       text: newMsg,
     };
-    console.log("Sending message:", msgData);
 
     try {
       const res = await axios.post(`http://localhost:1234/message-api/message`, msgData);
       const newMessage = res.data.payload;
 
-      // Ensure consistent format (populate sender manually if needed)
       if (typeof newMessage.sender === 'string') {
         newMessage.sender = { _id: newMessage.sender };
       }
 
       setMessages(prev => [...prev, newMessage]);
       setNewMsg('');
+
+      // Emit via socket
+      socket.emit('send-message', msgData);
     } catch (err) {
       console.error('Error sending message:', err);
     }
@@ -168,5 +186,6 @@ const styles = {
     cursor: 'pointer',
   },
 };
+
 
 export default Chat;
