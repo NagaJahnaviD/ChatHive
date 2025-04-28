@@ -114,7 +114,7 @@ function Contacts() {
             value={selectedUserId}
             onChange={e => setSelectedUserId(e.target.value)}
           >
-            <option value="">Select user</option>
+            <option value="" className='form-control'>Select user</option>
             {allUsers.map(user => (
               <option key={user._id} value={user._id}>
                 {user.firstName} {user.lastName} ({user.email})
@@ -128,45 +128,59 @@ function Contacts() {
       </div>
 
       <div style={styles.mainContent}>
-        <div style={styles.contactsList}>
-          {loading ? (
-            <p>Loading contacts...</p>
-          ) : error ? (
-            <p style={styles.error}>{error}</p>
-          ) : contactList.length === 0 ? (
-            <p style={styles.noContacts}>No contacts found.</p>
-          ) : (
-            <ul style={styles.list}>
-              {contactList.map((contact) => (
-                <li key={contact._id} style={styles.card}>
-                  <img
-                    src={contact.profilePictureUrl || 'https://via.placeholder.com/40'}
-                    alt={contact.username}
-                    style={styles.avatar}
-                  />
-                  <div>
-                    <p style={styles.name}>{contact.firstName} {contact.lastName}</p>
-                    <p style={styles.email}>{contact.email}</p>
-                    <p style={styles.status}>
-                      <span style={{ ...styles.statusDot, ...getStatusStyle(contact.status) }}></span>
-                      {contact.status}
-                    </p>
-                    <button onClick={() => setSelectedContact(contact)}>
-                      Chat
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+  <div 
+    style={{
+      ...styles.contactsList,
+      flex: selectedContact ? 2 : 3, // SMALLER when chat selected
+      transition: 'flex 0.3s ease',
+      minWidth: '250px', // (optional) don't shrink contacts too much
+    }}
+  >
+    {loading ? (
+      <p>Loading contacts...</p>
+    ) : error ? (
+      <p style={styles.error}>{error}</p>
+    ) : contactList.length === 0 ? (
+      <p style={styles.noContacts}>No contacts found.</p>
+    ) : (
+      <ul style={styles.list} className='w-100'>
+        {contactList.map((contact) => (
+          <li key={contact._id} style={styles.card}>
+            <img
+              src={contact.profilePictureUrl || 'https://via.placeholder.com/40'}
+              alt={contact.username}
+              style={styles.avatar}
+            />
+            <div style={{flexGrow:1}}>
+              <p style={styles.name}>{contact.firstName} {contact.lastName}</p>
+              <p style={styles.email}>{contact.email}</p>
+              <p style={styles.status}>
+                <span style={{ ...styles.statusDot, ...getStatusStyle(contact.status) }}></span>
+                {contact.status}
+              </p>
+              <button style={{ marginLeft: 'auto' }} onClick={() => setSelectedContact(contact)}>
+                Chat
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
 
-        {/* Render Chat component if selectedContact is not null */}
-        {selectedContact && (
-          <div style={styles.chatContainer}>
-            <Chat selectedContact={selectedContact} />
-          </div>
-        )}
+  {/* Render Chat component if selectedContact is not null */}
+  {selectedContact && (
+    <div 
+      style={{
+        ...styles.chatContainer,
+        flex: 5, // BIGGER chat window
+        transition: 'flex 0.3s ease',
+        minWidth: '500px', // (optional) ensure decent size
+      }}
+    >
+      <Chat selectedContact={selectedContact} />
+    </div>
+  )}
       </div>
     </div>
   );
@@ -174,7 +188,7 @@ function Contacts() {
 
 // Basic styles
 const styles = {
-  container: { maxWidth: '1000px', margin: '20px auto', padding: '1rem' },
+  container: { width: '1100px', margin: '20px auto', padding: '1rem' },
   heading: { fontSize: '24px', marginBottom: '1rem' },
   error: { color: 'red' },
   noContacts: { fontStyle: 'italic' },
@@ -195,7 +209,17 @@ const styles = {
     objectFit: 'cover',
   },
   name: { margin: 0, fontWeight: 'bold' },
-  email: { margin: 0, fontSize: '0.9rem', color: '#666' },
+  email: { 
+    margin: 0, 
+    fontSize: '0.9rem', 
+    color: '#666',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '150px', // or 180px, you can adjust
+    display: 'block'
+  },
+  
   status: { margin: '0.3rem 0', fontSize: '0.85rem' },
   statusDot: {
     display: 'inline-block',

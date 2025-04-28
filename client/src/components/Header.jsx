@@ -2,7 +2,7 @@ import {useContext} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {useClerk, useUser} from '@clerk/clerk-react'
 import { UserContext } from './UserContext'
-
+import logo from '../assets/logo.png';
 function Header() {
 
   const {signOut} = useClerk()
@@ -19,17 +19,18 @@ function Header() {
 
 
   return (
-    <div style={{height:'100px'}}>
-      <nav className='header d-flex justify-content-between'>
-        <div className="d-flex justify-content-center header-links w-25 mb-0 align-items-center">
-          <Link to="/" style={{textDecoration:'none'}}>LOGO</Link>
+    <div style={{height:'100px'}} className='pb-0'>
+      <nav className='header d-flex justify-content-between mb-0 pb-0'>
+        <div className="d-flex justify-content-center header-links w-25 mb-0 align-items-center" style={{ height: '100%' }}>
+          <Link to="/" style={{textDecoration:'none', color:'#0077B6'}} className='display-6'><img src={logo} style={{ height: '90px' }} /> ChatHive</Link>
+
         </div>
         <ul className='d-flex list-unstyled justify-content-around mb-0 p-3 w-25 align-items-center'>
   {!isSignedIn ? (
     <>
-      <li><Link to='' style={{textDecoration:'none'}}>Home</Link></li>
-      <li><Link to='signin' style={{textDecoration:'none'}}>Login</Link></li>
-      <li><Link to='signup' style={{textDecoration:'none'}}>Register</Link></li>
+      <li><Link to='' style={{textDecoration:'none', color:'#0077B6'}} className='fw-bold'>Home</Link></li>
+      <li><Link to='signin' style={{textDecoration:'none', color:'#0077B6'}} className='fw-bold'>Login</Link></li>
+      <li><Link to='signup' style={{textDecoration:'none', color:'#0077B6'}} className='fw-bold'>Register</Link></li>
     </>
   ) : (
     <>

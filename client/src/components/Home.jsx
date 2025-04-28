@@ -5,7 +5,9 @@ import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Chat from './Chat';
+import './home.css'
 import Contacts from './Contacts';
+import ss from '../assets/ss.png'
 function Home() {
 
   const [error, setError] = useState('')
@@ -119,7 +121,7 @@ function Home() {
   console.log(currentUser)
   
   return (
-    <div>
+    <div className='pt-0'>
       {
         isSignedIn===false && 
         <div
@@ -138,7 +140,22 @@ function Home() {
     fontWeight: "bold"
   }}
 >
-  Login avvu bro 😎
+   <section className="hero">
+        <div className="hero-content">
+          <h1>Connect instantly with QuickChat</h1>
+          <p>Simple, secure messaging for everyone</p>
+        </div>
+        <div className="hero-image">
+          <div className="phone-mockup">
+            <img 
+              src={ss} 
+              alt="QuickChat in action" 
+              className="mockup-screen" 
+            />
+          </div>
+        </div>
+      </section> 
+
 </div>
 
       }
