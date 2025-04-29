@@ -7,7 +7,7 @@ import axios from 'axios';
 import Chat from './Chat';
 import './home.css'
 import Contacts from './Contacts';
-import ss from '../assets/ss.png'
+import ss from '../assets/chatting.svg'
 function Home() {
 
   const [error, setError] = useState('')
@@ -142,7 +142,7 @@ function Home() {
 >
    <section className="hero">
         <div className="hero-content">
-          <h1>Connect instantly with QuickChat</h1>
+          <h1>Connect instantly<br /> with ChatHive</h1>
           <p>Simple, secure messaging for everyone</p>
         </div>
         <div className="hero-image">
