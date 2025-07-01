@@ -17,9 +17,10 @@
 ---
 
 ## 🖼️ Preview
+![Screenshot 2025-07-01 120418](https://github.com/user-attachments/assets/71c54992-d1bd-45d6-9683-842c0e5a1cf6)
+![Screenshot 2025-07-01 120510](https://github.com/user-attachments/assets/8bd85f31-79c6-497b-ae4e-de6c3db93140)
 
-> *(Add screenshots or demo GIF here)*  
-> Examples: Login screen, chat UI, contact selection dropdown
+
 
 ---
 
